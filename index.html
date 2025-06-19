@@ -147,29 +147,52 @@
     </footer>
 
     <script>
-        // Set current year
-        document.getElementById('year').textContent = new Date().getFullYear();
-        
-        // Update OAuth URLs based on current domain
-        const currentDomain = window.location.hostname;
-        let appDomain = 'app.flowguard.dev'; // default production
-        
-        if (currentDomain === 'dev.flowguard.dev') {
-            appDomain = 'app-dev.flowguard.dev';
-        } else if (currentDomain === 'staging.flowguard.dev') {
-            appDomain = 'app-staging.flowguard.dev';
-        } else if (currentDomain === 'localhost' || currentDomain === '127.0.0.1') {
-            appDomain = 'localhost:3000'; // local frontend dev server
+        // Wait for DOM to be ready
+        function updateOAuthLinks() {
+            // Set current year
+            const yearElement = document.getElementById('year');
+            if (yearElement) {
+                yearElement.textContent = new Date().getFullYear();
+            }
+            
+            // Update OAuth URLs based on current domain
+            const currentDomain = window.location.hostname;
+            let appDomain = 'app.flowguard.dev'; // default production
+            
+            if (currentDomain === 'dev.flowguard.dev') {
+                appDomain = 'app-dev.flowguard.dev';
+            } else if (currentDomain === 'staging.flowguard.dev') {
+                appDomain = 'app-staging.flowguard.dev';
+            } else if (currentDomain === 'localhost' || currentDomain === '127.0.0.1') {
+                appDomain = 'localhost:3000'; // local frontend dev server
+            }
+            
+            // Update all OAuth links
+            const protocol = (currentDomain === 'localhost' || currentDomain === '127.0.0.1') ? 'http' : 'https';
+            const oauthUrl = `${protocol}://${appDomain}/api/auth/signin/github`;
+            
+            // Update all sign-in buttons
+            const buttons = document.querySelectorAll('.signin-btn');
+            buttons.forEach(link => {
+                link.href = oauthUrl;
+                // Add click handler as backup
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = oauthUrl;
+                });
+            });
+            
+            // Log for debugging
+            console.log('OAuth URL updated to:', oauthUrl);
+            console.log('Updated', buttons.length, 'buttons');
         }
         
-        // Update all OAuth links
-        const protocol = (currentDomain === 'localhost' || currentDomain === '127.0.0.1') ? 'http' : 'https';
-        const oauthUrl = `${protocol}://${appDomain}/api/auth/signin/github`;
-        
-        // Update all sign-in buttons
-        document.querySelectorAll('.signin-btn').forEach(link => {
-            link.href = oauthUrl;
-        });
+        // Run when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateOAuthLinks);
+        } else {
+            updateOAuthLinks();
+        }
     </script>
 </body>
 </html>

@@ -169,7 +169,9 @@
             
             // Update all OAuth links
             const protocol = (currentDomain === 'localhost' || currentDomain === '127.0.0.1') ? 'http' : 'https';
-            const oauthUrl = `${protocol}://${appDomain}/api/auth/signin/github`;
+            // Redirect to the sign-in page, not the API endpoint
+            // NextAuth will handle the OAuth flow from there
+            const oauthUrl = `${protocol}://${appDomain}/api/auth/signin?callbackUrl=${encodeURIComponent(`${protocol}://${appDomain}/dashboard`)}`;
             
             // Update all sign-in buttons
             const buttons = document.querySelectorAll('.signin-btn');
